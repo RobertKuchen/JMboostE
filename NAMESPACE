@@ -1,2 +1,1 @@
-# Export all names
-exportPattern(".")
+export(JMboost, simJM)
