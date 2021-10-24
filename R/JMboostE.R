@@ -47,8 +47,7 @@ JMboost = function(y, Xl = NULL, Xs = NULL, Xls = NULL, T_long, T_surv, delta, i
   gamma0 = rep(0, N)#offset$coefficients$random$id
   gamma1 = rep(0, N)
   sigma2 = offset$sigma
-  print(sigma2)
-
+  
   ### set starting values based on chosen sets of covariates
   betal = 0
   betas = 0
@@ -140,7 +139,7 @@ JMboost = function(y, Xl = NULL, Xs = NULL, Xls = NULL, T_long, T_surv, delta, i
       ###################COMPUTING THE GRADIENT######################
       if(time.effect){
         if(sum(gamma1)!=0 || betat!=0){
-          u = delta - lambda*exp(etas) * (exp(alpha*etals_un) - exp(alpha*(gamma0 + Xls_un%*%betals)))/(alpha*(betat+gamma1))
+          u = delta - lambda*exp(etas) * (exp(alpha*etals_un) - exp(alpha*(gamma0 + (Xls_un%*%betals)[,1])))/(alpha*(betat+gamma1))
         }else{
           u = delta - lambda*exp(etas + alpha*etals_un)*T_surv
         }
@@ -178,7 +177,7 @@ JMboost = function(y, Xl = NULL, Xs = NULL, Xls = NULL, T_long, T_surv, delta, i
       u_l = (y - etal - etals)/sigma2
       if(time.effect){
         if(sum(gamma1)!=0 || betat!=0){
-          u_s = delta*alpha - lambda*exp(etas)*(exp(alpha*etals_un) - exp(alpha*(gamma0 + Xls_un%*%betals)))/(gamma1 + betat)
+          u_s = delta*alpha - lambda*exp(etas)*(exp(alpha*etals_un) - exp(alpha*(gamma0 + (Xls_un%*%betals)[,1])))/(gamma1 + betat)
         }else{
           u_s = delta*alpha - alpha*lambda*exp(etas)*exp(alpha*etals_un)*T_surv
         }
@@ -221,11 +220,17 @@ JMboost = function(y, Xl = NULL, Xs = NULL, Xls = NULL, T_long, T_surv, delta, i
                      betals=betals, betat=betat, time.effect=time.effect, T_surv=T_surv, interval=optim.int)$minimum
 
     ALPHA[m] = alpha
+    
+    p = pl + pls + as.numeric(time.effect) + 3
+  
+    sigma2 = sum((y - etal - etals)^2)/(n - p)
+  
+    SIGMA2[m] = sigma2
+    
     if(m%%100==0){print(m)}
   }
 
-  p = pl + pls + as.numeric(time.effect) + 3
-  sigma2 = sum((y - etal - etals)^2)/(n - p)
+
 
   structure(list(GAMMA0 = GAMMA0, GAMMA1 = GAMMA1, BETAL = BETAL, BETAS = BETAS,
                  BETALS = BETALS, ALPHA = ALPHA, LAMBDA = LAMBDA, SIGMA2 = SIGMA2,
