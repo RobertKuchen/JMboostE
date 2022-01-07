@@ -46,7 +46,7 @@ JMboost = function(y, Xl = NULL, Xs = NULL, Xls = NULL, T_long, T_surv, delta, i
   int = 0 #offset$coefficients$fixed
   gamma0 = rep(0, N)#offset$coefficients$random$id
   gamma1 = rep(0, N)
-  sigma2 = offset$sigma
+  sigma2 = offset$sigma^2
   print(sigma2)
 
   ### set starting values based on chosen sets of covariates
